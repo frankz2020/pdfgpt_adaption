@@ -91,25 +91,51 @@ class DocGPT:
         self.qa_chain = None
         self._llm = None
 
-        self.prompt_template = (
-            "Only answer what is asked. Answer step-by-step.\n"
-            "If the content has sections, please summarize them "
-            "in order and present them in a bulleted format.\n"
-            "Utilize line breaks for better readability.\n"
-            "For example, sequentially summarize the "
-            "introduction, methods, results, and so on.\n"
-            "Please use Python's newline symbols appropriately to "
-            "enhance the readability of the response, "
-            "but don't use two newline symbols consecutive.\n\n"
-            "{context}\n\n"
-            "Question: {question}\n"
-        )
-        self.prompt = PromptTemplate(
-            template=self.prompt_template,
-            input_variables=['context', 'question']
-        )
+        def contains_chinese(text):
+            return any('\u4e00' <= char <= '\u9fff' for char in text)
+        
+        chinese_present = any(contains_chinese(doc) for doc in self.docs)
 
-        self.refine_prompt_template = (
+        if chinese_present:
+            # Define the Chinese-specific prompts here
+            self.prompt_template = (
+                "只回答所问的问题。按步骤逐步回答。\n"
+                "如果内容有章节，请按顺序概括，并以符号列表的形式呈现。\n"
+                "例如，按顺序总结引言、方法、结果等呈现。\n"
+                "请适当使用 Python 的换行符号，以增强回复的可读性，但不要连续使用两个换行符号。\n\n"
+                "{context}\n\n"
+                "问题：{question}\n"
+            )
+
+            self.refine_prompt_template = (
+            "原问题为：{question}\n"
+            "我们已提供的回答为：{existing_answer}\n"
+            "现在请更新回答，给出更准确的答复，"
+            "回答时可以参考下方额外的背景信息（如需）：\n"
+            "------------\n"
+            "{context_str}\n"
+            "------------\n"
+            "根据新的信息，请更新原回答，给出一个更准确的答案。"
+            "如果新获取的信息对回答问题并无帮助，返回原回答。\n"
+            "请适当使用 Python 的换行符号，以增强回复的可读性，但不要连续使用两个换行符号。\n"
+            )
+
+        else:
+
+            self.prompt_template = (
+                "Only answer what is asked. Answer step-by-step.\n"
+                "If the content has sections, please summarize them "
+                "in order and present them in a bulleted format.\n"
+                "Utilize line breaks for better readability.\n"
+                "For example, sequentially summarize the "
+                "introduction, methods, results, and so on.\n"
+                "Please use Python's newline symbols appropriately to "
+                "enhance the readability of the response, "
+                "but don't use two newline symbols consecutive.\n\n"
+                "{context}\n\n"
+                "Question: {question}\n"
+            )
+            self.refine_prompt_template = (
             "The original question is as follows: {question}\n"
             "We have provided an existing answer: {existing_answer}\n"
             "We have the opportunity to refine the existing answer"
@@ -123,7 +149,13 @@ class DocGPT:
             "Please use Python's newline symbols "
             "appropriately to enhance the readability of the response, "
             "but don't use two newline symbols consecutive.\n"
+            )
+            
+        self.prompt = PromptTemplate(
+            template=self.prompt_template,
+            input_variables=['context', 'question']
         )
+
         self.refine_prompt = PromptTemplate(
             template=self.refine_prompt_template,
             input_variables=['question', 'existing_answer', 'context_str']

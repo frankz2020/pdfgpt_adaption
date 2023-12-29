@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  docgpt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8501:8501'
+    volumes:
+      - C:\Users\frank\Documents\Python Scripts\webapp_pdfGPT_adoption\v0:/app

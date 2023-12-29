@@ -9,7 +9,7 @@ from streamlit_chat import message
 from components import get_response, side_bar, theme, upload_and_process_document
 from docGPT import create_doc_gpt
 
-OPENAI_API_KEY = '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'
+OPENAI_API_KEY = ''
 model = None
 
 os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
@@ -32,9 +32,23 @@ def main():
     global model
     theme()
     #side_bar()
-
     doc_container = st.container()
     with doc_container:
+
+        if st.session_state.openai_api_key:
+            OPENAI_API_KEY = st.session_state.openai_api_key
+            st.sidebar.success('API key loaded form previous input')
+        else:
+            OPENAI_API_KEY = st.sidebar.text_input(
+                label='#### Your OpenAI API Key 👇',
+                placeholder="sk-...",
+                type="password",
+                key='OPENAI_API_KEY'
+            )
+            st.session_state.openai_api_key = OPENAI_API_KEY
+
+        os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
+
         docs = upload_and_process_document()
 
         if docs:

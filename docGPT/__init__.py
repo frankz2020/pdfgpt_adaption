@@ -22,8 +22,8 @@ def create_doc_gpt(_docs: list) -> DocGPT:
         # Initialize the OpenAI GPT-3.5 Turbo model
         llm_model = ChatOpenAI(
             temperature=0.2,
-            max_tokens=6000,
-            model_name='gpt-3.5-turbo-16k'
+            max_tokens=2000,
+            model_name='gpt-3.5-turbo'
         )
         docGPT.llm = llm_model
 

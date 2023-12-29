@@ -92,6 +92,8 @@ class DocGPT:
         self._llm = None
 
         def contains_chinese(text):
+            if not isinstance(text, str):
+                return False  # or handle it appropriately
             return any('\u4e00' <= char <= '\u9fff' for char in text)
         
         chinese_present = any(contains_chinese(doc) for doc in self.docs)
@@ -108,16 +110,16 @@ class DocGPT:
             )
 
             self.refine_prompt_template = (
-            "原问题为：{question}\n"
-            "我们已提供的回答为：{existing_answer}\n"
-            "现在请更新回答，给出更准确的答复，"
-            "回答时可以参考下方额外的背景信息（如需）：\n"
-            "------------\n"
-            "{context_str}\n"
-            "------------\n"
-            "根据新的信息，请更新原回答，给出一个更准确的答案。"
-            "如果新获取的信息对回答问题并无帮助，返回原回答。\n"
-            "请适当使用 Python 的换行符号，以增强回复的可读性，但不要连续使用两个换行符号。\n"
+                "原问题为：{question}\n"
+                "我们已提供的回答为：{existing_answer}\n"
+                "现在请更新回答，给出更准确的答复，"
+                "回答时可以参考下方额外的背景信息（如需）：\n"
+                "------------\n"
+                "{context_str}\n"
+                "------------\n"
+                "根据新的信息，请更新原回答，给出一个更准确的答案。"
+                "如果新获取的信息对回答问题并无帮助，返回原回答。\n"
+                "请适当使用 Python 的换行符号，以增强回复的可读性，但不要连续使用两个换行符号。\n"
             )
 
         else:
@@ -136,19 +138,19 @@ class DocGPT:
                 "Question: {question}\n"
             )
             self.refine_prompt_template = (
-            "The original question is as follows: {question}\n"
-            "We have provided an existing answer: {existing_answer}\n"
-            "We have the opportunity to refine the existing answer"
-            "(only if needed) with some more context below.\n"
-            "------------\n"
-            "{context_str}\n"
-            "------------\n"
-            "Given the new context, refine the original answer to better "
-            "answer the question. "
-            "If the context isn't useful, return the original answer.\n"
-            "Please use Python's newline symbols "
-            "appropriately to enhance the readability of the response, "
-            "but don't use two newline symbols consecutive.\n"
+                "The original question is as follows: {question}\n"
+                "We have provided an existing answer: {existing_answer}\n"
+                "We have the opportunity to refine the existing answer"
+                "(only if needed) with some more context below.\n"
+                "------------\n"
+                "{context_str}\n"
+                "------------\n"
+                "Given the new context, refine the original answer to better "
+                "answer the question. "
+                "If the context isn't useful, return the original answer.\n"
+                "Please use Python's newline symbols "
+                "appropriately to enhance the readability of the response, "
+                "but don't use two newline symbols consecutive.\n"
             )
             
         self.prompt = PromptTemplate(

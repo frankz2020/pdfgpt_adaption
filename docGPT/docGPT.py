@@ -96,13 +96,14 @@ class DocGPT:
                 return False  # or handle it appropriately
             return any('\u4e00' <= char <= '\u9fff' for char in text)
         
-        chinese_present = any(contains_chinese(doc) for doc in self.docs)
+        chinese_present = any(contains_chinese(doc.page_content) for doc in self.docs)
 
         if chinese_present:
             # Define the Chinese-specific prompts here
+            print("HEY IT WORKED")
             self.prompt_template = (
                 "只回答所问的问题。按步骤逐步回答。\n"
-                "如果内容有章节，请按顺序概括，并以符号列表的形式呈现。\n"
+                "如果内容有章节划分，请按顺序概括，并以符号列表的形式呈现。\n"
                 "例如，按顺序总结引言、方法、结果等呈现。\n"
                 "请适当使用 Python 的换行符号，以增强回复的可读性，但不要连续使用两个换行符号。\n\n"
                 "{context}\n\n"

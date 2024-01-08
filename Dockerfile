@@ -6,7 +6,8 @@ WORKDIR /app
 # Copy the project's requirements file into the container
 COPY requirements.txt ./requirements.txt
 # Upgrade pip for the latest features and install the project's Python dependencies.
-RUN /env/bin/python -m pip install --upgrade pip && pip install -r requirements.txt
+RUN pip install -U pip
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy the entire project into the container.
 # This may include all code, assets, and configuration files required to run the application.
